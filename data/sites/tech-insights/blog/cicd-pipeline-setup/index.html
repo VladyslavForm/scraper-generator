@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI/CD Pipeline Setup Guide - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">CI/CD Pipeline Setup Guide</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Angela Simmons</span>
+                    <span><strong>Published:</strong> February 1, 2025</span>
+                </div>
+            </header>
+
+            <p>Continuous Integration and Continuous Deployment (CI/CD) pipelines automate the software delivery process, enabling teams to ship code faster and with greater confidence. This comprehensive guide walks you through setting up a production-ready CI/CD pipeline from scratch.</p>
+
+            <h2>What is CI/CD?</h2>
+
+            <h3>Continuous Integration (CI)</h3>
+            <p>Automatically build and test code whenever changes are pushed to version control. CI catches bugs early and ensures code quality.</p>
+
+            <h3>Continuous Delivery (CD)</h3>
+            <p>Automatically deploy tested code to staging environments, ready for manual approval to production.</p>
+
+            <h3>Continuous Deployment</h3>
+            <p>Fully automate deployment to production without manual intervention.</p>
+
+            <h2>Pipeline Stages</h2>
+
+            <h3>1. Source Stage</h3>
+            <p>Trigger pipeline on code changes:</p>
+            <pre><code>on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]</code></pre>
+
+            <h3>2. Build Stage</h3>
+            <p>Compile code and create artifacts:</p>
+            <pre><code>build:
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build
+
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artifacts
+        path: dist/</code></pre>
+
+            <h3>3. Test Stage</h3>
+            <p>Run automated tests:</p>
+            <pre><code>test:
+  needs: build
+  steps:
+    - name: Unit tests
+      run: npm test
+
+    - name: Integration tests
+      run: npm run test:integration
+
+    - name: Code coverage
+      run: npm run test:coverage
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v2</code></pre>
+
+            <h3>4. Security Stage</h3>
+            <p>Scan for vulnerabilities:</p>
+            <pre><code>security:
+  steps:
+    - name: Dependency audit
+      run: npm audit
+
+    - name: SAST scanning
+      uses: github/codeql-action/analyze@v2
+
+    - name: Container scanning
+      run: |
+        docker build -t myapp:${{ github.sha }} .
+        trivy image myapp:${{ github.sha }}</code></pre>
+
+            <h3>5. Deploy Stage</h3>
+            <p>Deploy to environments:</p>
+            <pre><code>deploy-staging:
+  needs: [test, security]
+  if: github.ref == 'refs/heads/develop'
+  steps:
+    - name: Deploy to staging
+      run: |
+        kubectl config use-context staging
+        kubectl set image deployment/myapp myapp=myapp:${{ github.sha }}
+
+deploy-production:
+  needs: [test, security]
+  if: github.ref == 'refs/heads/main'
+  environment:
+    name: production
+  steps:
+    - name: Deploy to production
+      run: |
+        kubectl config use-context production
+        kubectl set image deployment/myapp myapp=myapp:${{ github.sha }}</code></pre>
+
+            <h2>GitHub Actions Pipeline</h2>
+            <p>Complete example for a Node.js application:</p>
+
+            <pre><code>name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Test
+      run: npm test -- --coverage
+
+    - name: Build
+      run: npm run build
+
+    - name: Build Docker image
+      run: docker build -t myapp:${{ github.sha }} .
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy to ECS
+      run: |
+        aws ecs update-service --cluster production --service myapp --force-new-deployment</code></pre>
+
+            <h2>GitLab CI/CD Pipeline</h2>
+            <pre><code>stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+
+build:
+  stage: build
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+
+test:
+  stage: test
+  script:
+    - npm ci
+    - npm run lint
+    - npm test
+
+deploy-staging:
+  stage: deploy
+  script:
+    - kubectl config use-context staging
+    - kubectl set image deployment/myapp myapp=$DOCKER_IMAGE
+  only:
+    - develop
+
+deploy-production:
+  stage: deploy
+  script:
+    - kubectl config use-context production
+    - kubectl set image deployment/myapp myapp=$DOCKER_IMAGE
+  only:
+    - main
+  when: manual</code></pre>
+
+            <h2>Jenkins Pipeline</h2>
+            <pre><code>pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm ci'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t myapp:${BUILD_NUMBER} .'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh 'kubectl set image deployment/myapp myapp=myapp:${BUILD_NUMBER}'
+            }
+        }
+    }
+
+    post {
+        failure {
+            mail to: 'team@example.com',
+                 subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                 body: "Something went wrong with ${env.BUILD_URL}"
+        }
+    }
+}</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <h3>Fast Feedback</h3>
+            <ul>
+                <li>Keep pipeline runs under 10 minutes</li>
+                <li>Run fast tests first, slow tests later</li>
+                <li>Parallelize independent jobs</li>
+                <li>Cache dependencies</li>
+            </ul>
+
+            <h3>Security</h3>
+            <ul>
+                <li>Use secrets management (never commit credentials)</li>
+                <li>Scan dependencies for vulnerabilities</li>
+                <li>Sign container images</li>
+                <li>Implement role-based access control</li>
+            </ul>
+
+            <h3>Reliability</h3>
+            <ul>
+                <li>Make pipelines idempotent</li>
+                <li>Implement retry logic for flaky tests</li>
+                <li>Use health checks before considering deployment successful</li>
+                <li>Implement rollback mechanisms</li>
+            </ul>
+
+            <h3>Observability</h3>
+            <ul>
+                <li>Log all pipeline activities</li>
+                <li>Track deployment metrics</li>
+                <li>Set up alerts for pipeline failures</li>
+                <li>Maintain deployment history</li>
+            </ul>
+
+            <h2>Environment Management</h2>
+            <p>Manage multiple environments effectively:</p>
+            <ul>
+                <li><strong>Development:</strong> Deploy on every commit</li>
+                <li><strong>Staging:</strong> Mirror production for testing</li>
+                <li><strong>Production:</strong> Manual approval or automated with strict checks</li>
+            </ul>
+
+            <h2>Deployment Strategies</h2>
+            <ul>
+                <li><strong>Blue-Green:</strong> Switch between two identical environments</li>
+                <li><strong>Canary:</strong> Gradually roll out to subset of users</li>
+                <li><strong>Rolling:</strong> Update instances incrementally</li>
+            </ul>
+
+            <h2>Monitoring and Alerting</h2>
+            <pre><code># Send deployment notification
+- name: Notify Slack
+  uses: 8398a7/action-slack@v3
+  with:
+    status: ${{ job.status }}
+    text: 'Deployment to production completed'
+    webhook_url: ${{ secrets.SLACK_WEBHOOK }}</code></pre>
+
+            <h2>Common Pitfalls</h2>
+            <ul>
+                <li>Skipping tests to speed up pipeline</li>
+                <li>Not testing the deployment process</li>
+                <li>Overcomplicating pipelines</li>
+                <li>Ignoring security scanning</li>
+                <li>Manual steps breaking automation</li>
+            </ul>
+
+            <p>A well-designed CI/CD pipeline is the foundation of modern software delivery. Start simple, iterate based on team needs, and continuously improve your pipeline. The investment in automation pays dividends through faster delivery, fewer bugs, and happier developers.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/devops-practices/" class="nav-link">← Previous: Essential DevOps Practices</a>
+                    <span></span>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

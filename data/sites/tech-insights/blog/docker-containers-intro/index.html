@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Docker Containers - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">Introduction to Docker Containers</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> James Rodriguez</span>
+                    <span><strong>Published:</strong> January 21, 2025</span>
+                </div>
+            </header>
+
+            <p>Docker has revolutionized how we build, ship, and run applications. Containerization provides consistency across development, testing, and production environments while improving resource utilization. This guide introduces Docker and shows you how to get started with containers.</p>
+
+            <h2>What Are Containers?</h2>
+            <p>Containers package application code together with all dependencies, libraries, and configuration files needed to run. Unlike virtual machines, containers share the host system's kernel, making them lightweight and fast to start.</p>
+
+            <h2>Why Docker?</h2>
+            <ul>
+                <li><strong>Consistency:</strong> "It works on my machine" becomes a thing of the past</li>
+                <li><strong>Isolation:</strong> Applications run in isolated environments</li>
+                <li><strong>Portability:</strong> Run anywhere Docker is supported</li>
+                <li><strong>Efficiency:</strong> Containers are lightweight compared to VMs</li>
+                <li><strong>Scalability:</strong> Easy to scale applications horizontally</li>
+            </ul>
+
+            <h2>Core Concepts</h2>
+
+            <h3>Images</h3>
+            <p>A Docker image is a read-only template containing application code, runtime, libraries, and dependencies. Images are built from Dockerfiles and serve as the blueprint for containers.</p>
+
+            <h3>Containers</h3>
+            <p>Containers are running instances of images. You can have multiple containers running from the same image, each isolated from the others.</p>
+
+            <h3>Dockerfile</h3>
+            <p>A Dockerfile is a text file containing instructions to build a Docker image.</p>
+
+            <pre><code># Example Dockerfile for a Node.js app
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]</code></pre>
+
+            <h2>Essential Docker Commands</h2>
+
+            <pre><code># Pull an image from Docker Hub
+docker pull nginx
+
+# Run a container
+docker run -d -p 80:80 nginx
+
+# List running containers
+docker ps
+
+# Stop a container
+docker stop container_id
+
+# Remove a container
+docker rm container_id
+
+# Build an image from Dockerfile
+docker build -t myapp:1.0 .
+
+# View logs
+docker logs container_id</code></pre>
+
+            <h2>Docker Compose</h2>
+            <p>Docker Compose simplifies running multi-container applications. Define your application's services in a YAML file and start everything with a single command.</p>
+
+            <pre><code>version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://db:5432/mydb
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:</code></pre>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Use official base images when possible</li>
+                <li>Keep images small by using multi-stage builds</li>
+                <li>Don't run containers as root</li>
+                <li>Use .dockerignore to exclude unnecessary files</li>
+                <li>One process per container (microservices approach)</li>
+                <li>Tag images with version numbers, not just 'latest'</li>
+                <li>Scan images for security vulnerabilities</li>
+            </ul>
+
+            <h2>Common Use Cases</h2>
+            <ul>
+                <li>Development environments that match production</li>
+                <li>Continuous integration and deployment pipelines</li>
+                <li>Microservices architectures</li>
+                <li>Testing applications in isolated environments</li>
+                <li>Running legacy applications on modern infrastructure</li>
+            </ul>
+
+            <p>Docker is an essential tool in modern software development. Whether you're a developer looking to streamline your workflow or a DevOps engineer managing production systems, mastering Docker will make your life easier and your applications more reliable.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/cloud-computing-guide/" class="nav-link">← Previous: Complete Guide to Cloud Computing</a>
+                    <a href="/blog/kubernetes-deployment/" class="nav-link">Next: Kubernetes Deployment Strategies →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

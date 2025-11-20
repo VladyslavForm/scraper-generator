@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Git Workflows - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">Advanced Git Workflows</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Nathan Price</span>
+                    <span><strong>Published:</strong> January 27, 2025</span>
+                </div>
+            </header>
+
+            <p>Git is more than just commit, push, and pull. Advanced Git workflows enable teams to collaborate effectively, maintain clean history, and manage complex projects with confidence. This guide explores sophisticated Git techniques for professional development teams.</p>
+
+            <h2>Branching Strategies</h2>
+
+            <h3>Git Flow</h3>
+            <p>Git Flow uses multiple long-lived branches for different purposes:</p>
+            <ul>
+                <li><strong>main:</strong> Production-ready code</li>
+                <li><strong>develop:</strong> Integration branch for features</li>
+                <li><strong>feature/*:</strong> Individual feature branches</li>
+                <li><strong>release/*:</strong> Release preparation branches</li>
+                <li><strong>hotfix/*:</strong> Emergency production fixes</li>
+            </ul>
+
+            <pre><code># Start a feature
+git flow feature start new-feature
+
+# Finish a feature
+git flow feature finish new-feature
+
+# Start a release
+git flow release start 1.0.0</code></pre>
+
+            <h3>GitHub Flow</h3>
+            <p>Simpler workflow with main branch and feature branches:</p>
+            <pre><code># Create feature branch
+git checkout -b feature/new-feature
+
+# Make changes and commit
+git add .
+git commit -m "Add new feature"
+
+# Push and create pull request
+git push -u origin feature/new-feature</code></pre>
+
+            <h2>Interactive Rebase</h2>
+            <p>Clean up commit history before merging:</p>
+
+            <pre><code># Rebase last 3 commits
+git rebase -i HEAD~3
+
+# In the editor, you can:
+# pick - keep commit as is
+# reword - change commit message
+# squash - combine with previous commit
+# fixup - like squash but discard message
+# drop - remove commit</code></pre>
+
+            <h2>Cherry-picking</h2>
+            <p>Apply specific commits to another branch:</p>
+
+            <pre><code># Apply commit to current branch
+git cherry-pick abc123
+
+# Cherry-pick multiple commits
+git cherry-pick abc123 def456
+
+# Cherry-pick without committing
+git cherry-pick -n abc123</code></pre>
+
+            <h2>Stashing</h2>
+            <p>Temporarily save changes without committing:</p>
+
+            <pre><code># Save current changes
+git stash save "work in progress"
+
+# List stashes
+git stash list
+
+# Apply most recent stash
+git stash apply
+
+# Apply and remove stash
+git stash pop
+
+# Apply specific stash
+git stash apply stash@{2}</code></pre>
+
+            <h2>Bisect for Bug Hunting</h2>
+            <p>Binary search to find which commit introduced a bug:</p>
+
+            <pre><code># Start bisect
+git bisect start
+
+# Mark current commit as bad
+git bisect bad
+
+# Mark last known good commit
+git bisect good abc123
+
+# Git will checkout middle commit
+# Test and mark as good or bad
+git bisect good  # or git bisect bad
+
+# Reset when done
+git bisect reset</code></pre>
+
+            <h2>Reflog: The Safety Net</h2>
+            <p>Recover lost commits and branches:</p>
+
+            <pre><code># View reflog
+git reflog
+
+# Recover deleted branch
+git checkout -b recovered-branch HEAD@{2}
+
+# Undo recent commits
+git reset --hard HEAD@{3}</code></pre>
+
+            <h2>Submodules and Subtrees</h2>
+
+            <h3>Submodules</h3>
+            <pre><code># Add submodule
+git submodule add https://github.com/user/repo.git path/to/submodule
+
+# Clone repo with submodules
+git clone --recurse-submodules https://github.com/user/main-repo.git
+
+# Update submodules
+git submodule update --remote</code></pre>
+
+            <h3>Subtrees</h3>
+            <pre><code># Add subtree
+git subtree add --prefix=lib/dependency https://github.com/user/dependency.git main
+
+# Update subtree
+git subtree pull --prefix=lib/dependency https://github.com/user/dependency.git main</code></pre>
+
+            <h2>Hooks for Automation</h2>
+            <pre><code># .git/hooks/pre-commit
+#!/bin/bash
+npm run lint
+npm test
+
+# Make executable
+chmod +x .git/hooks/pre-commit</code></pre>
+
+            <h2>Advanced Merge Strategies</h2>
+
+            <pre><code># Recursive merge (default)
+git merge feature-branch
+
+# Ours strategy - keep our version
+git merge -X ours feature-branch
+
+# Theirs strategy - prefer their version
+git merge -X theirs feature-branch
+
+# Squash merge - combine all commits
+git merge --squash feature-branch</code></pre>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Write clear, descriptive commit messages</li>
+                <li>Commit early and often (locally)</li>
+                <li>Keep commits atomic and focused</li>
+                <li>Use pull requests for code review</li>
+                <li>Protect main branch with branch policies</li>
+                <li>Use tags for releases</li>
+                <li>Document your workflow in CONTRIBUTING.md</li>
+            </ul>
+
+            <p>Mastering advanced Git workflows makes you more effective and confident as a developer. These techniques help maintain clean history, facilitate collaboration, and provide safety nets when things go wrong. Practice these commands in a test repository to build muscle memory.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/web-performance-tuning/" class="nav-link">← Previous: Web Performance Tuning Guide</a>
+                    <a href="/blog/react-hooks-explained/" class="nav-link">Next: React Hooks: A Complete Guide →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

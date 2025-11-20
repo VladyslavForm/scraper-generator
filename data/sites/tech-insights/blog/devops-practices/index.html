@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essential DevOps Practices - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">Essential DevOps Practices</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Christopher Baker</span>
+                    <span><strong>Published:</strong> January 31, 2025</span>
+                </div>
+            </header>
+
+            <p>DevOps bridges the gap between development and operations, enabling faster delivery of high-quality software. By combining cultural practices, automation, and tooling, DevOps transforms how teams build and operate applications. This guide covers essential DevOps practices for modern software teams.</p>
+
+            <h2>Core Principles</h2>
+
+            <h3>Culture and Collaboration</h3>
+            <p>DevOps starts with culture:</p>
+            <ul>
+                <li>Break down silos between development and operations</li>
+                <li>Foster shared responsibility for system reliability</li>
+                <li>Encourage blameless post-mortems</li>
+                <li>Promote continuous learning and experimentation</li>
+            </ul>
+
+            <h3>Automation</h3>
+            <p>Automate repetitive tasks to reduce errors and increase speed:</p>
+            <ul>
+                <li>Infrastructure provisioning</li>
+                <li>Testing and deployment</li>
+                <li>Monitoring and alerting</li>
+                <li>Backup and recovery</li>
+            </ul>
+
+            <h2>Continuous Integration (CI)</h2>
+            <p>Automatically build and test code with every commit:</p>
+
+            <pre><code># GitHub Actions CI example
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linter
+      run: npm run lint
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build application
+      run: npm run build</code></pre>
+
+            <h2>Continuous Delivery (CD)</h2>
+            <p>Automate deployment to production:</p>
+
+            <pre><code># Deployment pipeline
+deploy:
+  stage: deploy
+  script:
+    - docker build -t myapp:${CI_COMMIT_SHA} .
+    - docker push myapp:${CI_COMMIT_SHA}
+    - kubectl set image deployment/myapp myapp=myapp:${CI_COMMIT_SHA}
+  only:
+    - main</code></pre>
+
+            <h2>Infrastructure as Code (IaC)</h2>
+            <p>Define infrastructure using code for consistency and repeatability:</p>
+
+            <pre><code># Terraform example
+resource "aws_instance" "web" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "WebServer"
+    Environment = "Production"
+  }
+}
+
+resource "aws_s3_bucket" "data" {
+  bucket = "my-data-bucket"
+  acl    = "private"
+
+  versioning {
+    enabled = true
+  }
+}</code></pre>
+
+            <h2>Configuration Management</h2>
+            <p>Manage system configuration consistently:</p>
+
+            <pre><code># Ansible playbook
+---
+- name: Configure web servers
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy configuration
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted</code></pre>
+
+            <h2>Monitoring and Observability</h2>
+
+            <h3>The Three Pillars</h3>
+            <ul>
+                <li><strong>Metrics:</strong> Time-series data (CPU, memory, request rates)</li>
+                <li><strong>Logs:</strong> Detailed event records</li>
+                <li><strong>Traces:</strong> Request flows through distributed systems</li>
+            </ul>
+
+            <h3>Prometheus for Metrics</h3>
+            <pre><code>// Expose metrics in your application
+const promClient = require('prom-client');
+
+const httpRequestsTotal = new promClient.Counter({
+  name: 'http_requests_total',
+  help: 'Total HTTP requests',
+  labelNames: ['method', 'path', 'status']
+});
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestsTotal.labels(req.method, req.path, res.statusCode).inc();
+  });
+  next();
+});</code></pre>
+
+            <h2>Incident Management</h2>
+
+            <h3>On-Call Rotation</h3>
+            <p>Share operational responsibility across the team with fair on-call schedules.</p>
+
+            <h3>Incident Response Process</h3>
+            <ol>
+                <li><strong>Detection:</strong> Alert fires for anomaly</li>
+                <li><strong>Response:</strong> On-call engineer investigates</li>
+                <li><strong>Mitigation:</strong> Restore service quickly</li>
+                <li><strong>Resolution:</strong> Implement permanent fix</li>
+                <li><strong>Post-mortem:</strong> Document and learn from incident</li>
+            </ol>
+
+            <h2>Containerization and Orchestration</h2>
+
+            <h3>Docker for Containerization</h3>
+            <pre><code>FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]</code></pre>
+
+            <h3>Kubernetes for Orchestration</h3>
+            <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:1.0.0
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"</code></pre>
+
+            <h2>Security Practices</h2>
+            <ul>
+                <li>Scan container images for vulnerabilities</li>
+                <li>Implement least-privilege access controls</li>
+                <li>Rotate credentials regularly</li>
+                <li>Use secrets management (Vault, AWS Secrets Manager)</li>
+                <li>Enable audit logging</li>
+                <li>Automate security testing in CI/CD</li>
+            </ul>
+
+            <h2>Key Metrics</h2>
+
+            <h3>DORA Metrics</h3>
+            <ul>
+                <li><strong>Deployment Frequency:</strong> How often code is deployed</li>
+                <li><strong>Lead Time for Changes:</strong> Time from commit to production</li>
+                <li><strong>Mean Time to Recovery (MTTR):</strong> Time to restore service</li>
+                <li><strong>Change Failure Rate:</strong> Percentage of deployments causing failures</li>
+            </ul>
+
+            <h2>Tools Ecosystem</h2>
+            <ul>
+                <li><strong>Version Control:</strong> Git, GitHub, GitLab</li>
+                <li><strong>CI/CD:</strong> Jenkins, GitHub Actions, GitLab CI, CircleCI</li>
+                <li><strong>IaC:</strong> Terraform, CloudFormation, Pulumi</li>
+                <li><strong>Configuration:</strong> Ansible, Chef, Puppet</li>
+                <li><strong>Containers:</strong> Docker, Podman</li>
+                <li><strong>Orchestration:</strong> Kubernetes, Docker Swarm</li>
+                <li><strong>Monitoring:</strong> Prometheus, Grafana, Datadog, New Relic</li>
+                <li><strong>Logging:</strong> ELK Stack, Splunk, Loki</li>
+            </ul>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Start small and iterate - don't try to implement everything at once</li>
+                <li>Measure everything - use metrics to drive improvements</li>
+                <li>Automate toil - eliminate repetitive manual work</li>
+                <li>Practice chaos engineering - test system resilience</li>
+                <li>Document runbooks for common operations</li>
+                <li>Invest in developer experience</li>
+                <li>Make deployments boring - deploy frequently with confidence</li>
+            </ul>
+
+            <p>DevOps is a journey, not a destination. Success requires continuous improvement, learning from failures, and adapting practices to your organization's needs. By embracing DevOps culture and practices, teams can deliver value faster while maintaining system reliability and quality.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/microservices-architecture/" class="nav-link">← Previous: Building Microservices Architecture</a>
+                    <a href="/blog/cicd-pipeline-setup/" class="nav-link">Next: CI/CD Pipeline Setup Guide →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

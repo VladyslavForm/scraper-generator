@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes Deployment Strategies - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">Kubernetes Deployment Strategies</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> David Martinez</span>
+                    <span><strong>Published:</strong> January 22, 2025</span>
+                </div>
+            </header>
+
+            <p>Kubernetes has become the de facto standard for container orchestration. Understanding deployment strategies is crucial for maintaining high availability and minimizing downtime during updates. This guide explores different Kubernetes deployment strategies and when to use them.</p>
+
+            <h2>Why Deployment Strategies Matter</h2>
+            <p>The way you deploy updates can significantly impact your application's availability, user experience, and your ability to rollback problematic releases. Choosing the right strategy depends on your specific requirements and constraints.</p>
+
+            <h2>Rolling Updates</h2>
+            <p>Rolling updates gradually replace old pods with new ones, ensuring the application remains available throughout the deployment.</p>
+
+            <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:v2</code></pre>
+
+            <p><strong>Advantages:</strong> Zero downtime, gradual rollout<br>
+            <strong>Disadvantages:</strong> Both versions run simultaneously during deployment</p>
+
+            <h2>Blue-Green Deployments</h2>
+            <p>Blue-green deployments maintain two identical environments. Traffic switches from the old version (blue) to the new version (green) all at once.</p>
+
+            <p><strong>Advantages:</strong> Instant rollback, thorough testing before switch<br>
+            <strong>Disadvantages:</strong> Requires double the resources</p>
+
+            <h2>Canary Deployments</h2>
+            <p>Canary deployments gradually shift traffic from the old version to the new version, starting with a small percentage of users.</p>
+
+            <pre><code># Using Argo Rollouts for canary
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp-rollout
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause: {duration: 5m}
+      - setWeight: 50
+      - pause: {duration: 5m}
+      - setWeight: 100</code></pre>
+
+            <p><strong>Advantages:</strong> Risk mitigation, real-world testing<br>
+            <strong>Disadvantages:</strong> Complex monitoring required</p>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Always implement health checks (readiness and liveness probes)</li>
+                <li>Use resource limits to prevent resource starvation</li>
+                <li>Implement proper logging and monitoring</li>
+                <li>Test rollback procedures regularly</li>
+                <li>Use namespaces for environment separation</li>
+                <li>Version your container images properly</li>
+            </ul>
+
+            <p>Mastering Kubernetes deployment strategies gives you the confidence to ship updates frequently while maintaining reliability. Choose the strategy that best fits your application's requirements and organizational capabilities.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/docker-containers-intro/" class="nav-link">← Previous: Introduction to Docker Containers</a>
+                    <a href="/blog/api-design-best-practices/" class="nav-link">Next: API Design Best Practices →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

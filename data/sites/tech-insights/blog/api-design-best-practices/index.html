@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Design Best Practices - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">API Design Best Practices</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Linda Thompson</span>
+                    <span><strong>Published:</strong> January 23, 2025</span>
+                </div>
+            </header>
+
+            <p>Well-designed APIs are the backbone of modern software systems. They enable seamless communication between services and provide intuitive interfaces for developers. This guide covers essential best practices for designing robust, scalable, and developer-friendly APIs.</p>
+
+            <h2>RESTful Principles</h2>
+            <p>REST (Representational State Transfer) remains the most popular API architectural style. Follow these core principles:</p>
+
+            <h3>Use HTTP Methods Correctly</h3>
+            <ul>
+                <li><strong>GET:</strong> Retrieve resources</li>
+                <li><strong>POST:</strong> Create new resources</li>
+                <li><strong>PUT:</strong> Update existing resources (full replacement)</li>
+                <li><strong>PATCH:</strong> Partial updates</li>
+                <li><strong>DELETE:</strong> Remove resources</li>
+            </ul>
+
+            <h3>Resource-Based URLs</h3>
+            <pre><code># Good
+GET /api/users
+GET /api/users/123
+POST /api/users
+PUT /api/users/123
+DELETE /api/users/123
+
+# Bad
+GET /api/getUsers
+POST /api/createUser
+POST /api/deleteUser/123</code></pre>
+
+            <h2>Versioning</h2>
+            <p>Always version your API to maintain backward compatibility as it evolves.</p>
+
+            <pre><code># URL versioning
+/api/v1/users
+/api/v2/users
+
+# Header versioning
+Accept: application/vnd.myapi.v1+json</code></pre>
+
+            <h2>Status Codes</h2>
+            <p>Use appropriate HTTP status codes:</p>
+            <ul>
+                <li><strong>200 OK:</strong> Successful GET, PUT, PATCH</li>
+                <li><strong>201 Created:</strong> Successful POST</li>
+                <li><strong>204 No Content:</strong> Successful DELETE</li>
+                <li><strong>400 Bad Request:</strong> Invalid input</li>
+                <li><strong>401 Unauthorized:</strong> Authentication required</li>
+                <li><strong>403 Forbidden:</strong> Authenticated but not authorized</li>
+                <li><strong>404 Not Found:</strong> Resource doesn't exist</li>
+                <li><strong>500 Internal Server Error:</strong> Server error</li>
+            </ul>
+
+            <h2>Pagination</h2>
+            <p>For endpoints returning large datasets, implement pagination:</p>
+
+            <pre><code>GET /api/users?page=1&limit=20
+
+Response:
+{
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  }
+}</code></pre>
+
+            <h2>Error Handling</h2>
+            <p>Provide clear, consistent error messages:</p>
+
+            <pre><code>{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "email",
+        "message": "Invalid email format"
+      }
+    ]
+  }
+}</code></pre>
+
+            <h2>Authentication and Authorization</h2>
+            <p>Implement robust security:</p>
+            <ul>
+                <li>Use HTTPS for all endpoints</li>
+                <li>Implement JWT or OAuth 2.0 for authentication</li>
+                <li>Use API keys for service-to-service communication</li>
+                <li>Implement rate limiting to prevent abuse</li>
+            </ul>
+
+            <h2>Documentation</h2>
+            <p>Excellent documentation is crucial. Use tools like Swagger/OpenAPI:</p>
+
+            <pre><code>openapi: 3.0.0
+info:
+  title: My API
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: List all users
+      responses:
+        '200':
+          description: Successful response</code></pre>
+
+            <h2>Performance Optimization</h2>
+            <ul>
+                <li>Implement caching with appropriate headers</li>
+                <li>Support compression (gzip)</li>
+                <li>Use field filtering to reduce payload size</li>
+                <li>Implement HATEOAS for discoverability</li>
+            </ul>
+
+            <p>Great API design is about empathy for developers who will use your API. Make it intuitive, well-documented, and consistent. Your future self and other developers will thank you.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/kubernetes-deployment/" class="nav-link">← Previous: Kubernetes Deployment Strategies</a>
+                    <a href="/blog/database-optimization-tips/" class="nav-link">Next: Database Optimization Tips →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

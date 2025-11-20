@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Performance Tuning Guide - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">Web Performance Tuning Guide</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Marcus Foster</span>
+                    <span><strong>Published:</strong> January 26, 2025</span>
+                </div>
+            </header>
+
+            <p>Website performance directly impacts user experience, conversion rates, and SEO rankings. Even a one-second delay can significantly affect your bottom line. This comprehensive guide covers essential techniques for optimizing web performance.</p>
+
+            <h2>Core Web Vitals</h2>
+            <p>Google's Core Web Vitals measure user experience through three key metrics:</p>
+
+            <h3>Largest Contentful Paint (LCP)</h3>
+            <p>Measures loading performance. Aim for LCP under 2.5 seconds.</p>
+
+            <h3>First Input Delay (FID)</h3>
+            <p>Measures interactivity. Target FID under 100 milliseconds.</p>
+
+            <h3>Cumulative Layout Shift (CLS)</h3>
+            <p>Measures visual stability. Keep CLS below 0.1.</p>
+
+            <h2>Optimization Techniques</h2>
+
+            <h3>Minimize HTTP Requests</h3>
+            <ul>
+                <li>Combine CSS and JavaScript files</li>
+                <li>Use CSS sprites for images</li>
+                <li>Remove unnecessary plugins and scripts</li>
+                <li>Implement lazy loading for images</li>
+            </ul>
+
+            <h3>Image Optimization</h3>
+            <pre><code>&lt;!-- Modern image formats with fallbacks --&gt;
+&lt;picture&gt;
+  &lt;source srcset="image.webp" type="image/webp"&gt;
+  &lt;source srcset="image.avif" type="image/avif"&gt;
+  &lt;img src="image.jpg" alt="Description" loading="lazy"&gt;
+&lt;/picture&gt;
+
+&lt;!-- Responsive images --&gt;
+&lt;img srcset="small.jpg 480w, medium.jpg 800w, large.jpg 1200w"
+     sizes="(max-width: 600px) 480px, 800px"
+     src="medium.jpg" alt="Description"&gt;</code></pre>
+
+            <h3>Code Splitting and Lazy Loading</h3>
+            <pre><code>// Dynamic import for code splitting
+const module = await import('./heavy-component.js');
+
+// Lazy load components in React
+const HeavyComponent = lazy(() => import('./HeavyComponent'));</code></pre>
+
+            <h3>Caching Strategies</h3>
+            <pre><code># Browser caching headers
+Cache-Control: public, max-age=31536000, immutable
+
+# Service Worker caching
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});</code></pre>
+
+            <h2>CSS Optimization</h2>
+            <ul>
+                <li>Remove unused CSS with PurgeCSS</li>
+                <li>Minify CSS files</li>
+                <li>Use critical CSS inline</li>
+                <li>Defer non-critical CSS</li>
+            </ul>
+
+            <pre><code>&lt;!-- Inline critical CSS --&gt;
+&lt;style&gt;
+  /* Critical styles here */
+&lt;/style&gt;
+
+&lt;!-- Defer non-critical CSS --&gt;
+&lt;link rel="preload" href="styles.css" as="style"
+      onload="this.onload=null;this.rel='stylesheet'"&gt;</code></pre>
+
+            <h2>JavaScript Optimization</h2>
+            <ul>
+                <li>Minify and compress JavaScript</li>
+                <li>Defer non-critical scripts</li>
+                <li>Use async for independent scripts</li>
+                <li>Implement tree shaking to remove dead code</li>
+            </ul>
+
+            <pre><code>&lt;!-- Defer script execution --&gt;
+&lt;script src="script.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- Async for independent scripts --&gt;
+&lt;script src="analytics.js" async&gt;&lt;/script&gt;</code></pre>
+
+            <h2>Content Delivery Network (CDN)</h2>
+            <p>CDNs distribute content across multiple geographic locations, reducing latency by serving content from the nearest server to the user.</p>
+
+            <h2>Compression</h2>
+            <pre><code># Enable Gzip compression (Apache)
+&lt;IfModule mod_deflate.c&gt;
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript
+&lt;/IfModule&gt;
+
+# Enable Brotli (better compression)
+&lt;IfModule mod_brotli.c&gt;
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/css
+&lt;/IfModule&gt;</code></pre>
+
+            <h2>Database Query Optimization</h2>
+            <ul>
+                <li>Index frequently queried columns</li>
+                <li>Implement database query caching</li>
+                <li>Use connection pooling</li>
+                <li>Optimize N+1 queries</li>
+            </ul>
+
+            <h2>Performance Monitoring</h2>
+            <p>Use these tools to measure and monitor performance:</p>
+            <ul>
+                <li>Google PageSpeed Insights</li>
+                <li>Lighthouse (built into Chrome DevTools)</li>
+                <li>WebPageTest</li>
+                <li>Real User Monitoring (RUM) tools</li>
+            </ul>
+
+            <h2>Performance Budget</h2>
+            <p>Set and enforce performance budgets:</p>
+            <pre><code>// webpack-bundle-analyzer configuration
+{
+  "maxAssetSize": 244000,
+  "maxEntrypointSize": 244000
+}</code></pre>
+
+            <p>Web performance optimization is an ongoing process. Regularly audit your site, set performance budgets, and monitor real user metrics to ensure your users have the best possible experience.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/cybersecurity-fundamentals/" class="nav-link">← Previous: Essential Cybersecurity Fundamentals</a>
+                    <a href="/blog/git-workflow-advanced/" class="nav-link">Next: Advanced Git Workflows →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

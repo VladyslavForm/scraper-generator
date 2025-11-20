@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Hooks: A Complete Guide - Tech Insights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="site-title">Tech Insights</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/contact/">Contact</a></li>
+                    <li><a href="/terms/">Terms</a></li>
+                    <li><a href="/privacy/">Privacy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <a href="/blog/" class="back-to-blog">← Back to Blog</a>
+
+        <article class="article-content">
+            <header class="article-header">
+                <h1 class="article-title">React Hooks: A Complete Guide</h1>
+                <div class="article-byline">
+                    <span><strong>Author:</strong> Jennifer Lee</span>
+                    <span><strong>Published:</strong> January 28, 2025</span>
+                </div>
+            </header>
+
+            <p>React Hooks revolutionized how we write React components by enabling state and lifecycle features in functional components. This comprehensive guide explores built-in hooks, custom hooks, and advanced patterns for building modern React applications.</p>
+
+            <h2>Why Hooks?</h2>
+            <p>Hooks solve several problems that plagued class components:</p>
+            <ul>
+                <li>Reusing stateful logic between components was difficult</li>
+                <li>Complex components became hard to understand</li>
+                <li>Classes confused both people and machines</li>
+            </ul>
+
+            <h2>useState: Managing State</h2>
+            <p>The most fundamental hook for adding state to functional components:</p>
+
+            <pre><code>import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() => setCount(count + 1)}&gt;
+        Increment
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+// With objects
+const [user, setUser] = useState({ name: '', email: '' });
+
+// Update object state
+setUser(prev => ({ ...prev, name: 'John' }));</code></pre>
+
+            <h2>useEffect: Side Effects</h2>
+            <p>Handle side effects like data fetching, subscriptions, and DOM manipulation:</p>
+
+            <pre><code>import { useEffect } from 'react';
+
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  // Runs after every render
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  });
+
+  // Runs only on mount (empty dependency array)
+  useEffect(() => {
+    document.title = 'User Profile';
+  }, []);
+
+  // Runs when userId changes
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  }, [userId]);
+
+  // Cleanup function
+  useEffect(() => {
+    const subscription = subscribeToUser(userId);
+    return () => subscription.unsubscribe();
+  }, [userId]);
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;;
+}</code></pre>
+
+            <h2>useContext: Accessing Context</h2>
+            <p>Access React context without nesting:</p>
+
+            <pre><code>import { createContext, useContext } from 'react';
+
+const ThemeContext = createContext('light');
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+
+  return (
+    &lt;button className={`theme-${theme}`}&gt;
+      Click me
+    &lt;/button&gt;
+  );
+}</code></pre>
+
+            <h2>useReducer: Complex State Logic</h2>
+            <p>Better than useState for complex state logic:</p>
+
+            <pre><code>import { useReducer } from 'react';
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    &lt;div&gt;
+      Count: {state.count}
+      &lt;button onClick={() => dispatch({ type: 'increment' })}&gt;
+        +
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+            <h2>useMemo and useCallback: Performance</h2>
+            <p>Optimize performance by memoizing values and callbacks:</p>
+
+            <pre><code>import { useMemo, useCallback } from 'react';
+
+function ExpensiveComponent({ items, query }) {
+  // Memoize expensive computation
+  const filteredItems = useMemo(() => {
+    return items.filter(item =>
+      item.name.includes(query)
+    );
+  }, [items, query]);
+
+  // Memoize callback function
+  const handleClick = useCallback(() => {
+    console.log('Clicked');
+  }, []);
+
+  return &lt;ItemList items={filteredItems} onClick={handleClick} /&gt;;
+}</code></pre>
+
+            <h2>useRef: DOM Access and Persistent Values</h2>
+            <pre><code>import { useRef, useEffect } from 'react';
+
+function InputWithFocus() {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  return &lt;input ref={inputRef} /&gt;;
+}
+
+// Persistent value that doesn't trigger re-render
+function Timer() {
+  const intervalRef = useRef();
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      console.log('Tick');
+    }, 1000);
+
+    return () => clearInterval(intervalRef.current);
+  }, []);
+}</code></pre>
+
+            <h2>Custom Hooks</h2>
+            <p>Extract and reuse stateful logic:</p>
+
+            <pre><code>// useFetch custom hook
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// Usage
+function UserList() {
+  const { data, loading, error } = useFetch('/api/users');
+
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+  if (error) return &lt;div&gt;Error: {error.message}&lt;/div&gt;;
+
+  return &lt;ul&gt;{data.map(user => &lt;li key={user.id}&gt;{user.name}&lt;/li&gt;)}&lt;/ul&gt;;
+}</code></pre>
+
+            <h2>Rules of Hooks</h2>
+            <ul>
+                <li>Only call hooks at the top level (not in loops or conditions)</li>
+                <li>Only call hooks from React functions</li>
+                <li>Custom hooks must start with "use"</li>
+            </ul>
+
+            <h2>Best Practices</h2>
+            <ul>
+                <li>Keep dependency arrays accurate (use ESLint rule)</li>
+                <li>Split useEffect by concern, not lifecycle</li>
+                <li>Extract custom hooks for reusable logic</li>
+                <li>Use useCallback for callbacks passed to optimized child components</li>
+                <li>Don't overuse useMemo - only for expensive computations</li>
+            </ul>
+
+            <p>React Hooks provide a powerful and expressive way to build components. By mastering hooks, you'll write cleaner, more maintainable React code that's easier to test and reason about.</p>
+
+            <div class="article-nav">
+                <div class="prev-next">
+                    <a href="/blog/git-workflow-advanced/" class="nav-link">← Previous: Advanced Git Workflows</a>
+                    <a href="/blog/typescript-benefits/" class="nav-link">Next: TypeScript Benefits for Large Projects →</a>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Tech Insights</h4>
+                    <p style="color: var(--text-light);">Your trusted source for technology news, tutorials, and expert opinions on the latest developments in software engineering and tech industry.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li><a href="/about/">About</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/terms/">Terms of Service</a></li>
+                        <li><a href="/privacy/">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <div class="newsletter-signup">
+                        <input type="email" placeholder="Enter your email">
+                        <button>Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 Tech Insights. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
