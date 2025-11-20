@@ -1,0 +1,11 @@
+articles.db
+scrapers/scraper_localhost_*.py
+scrapers/scraper_{sanitized_name}.py
+debug_test.py
+test_*.py
+claude_tasks/
+CLAUDE.md
+SOLUTION.md
+cli.py
+config.py
+.env
